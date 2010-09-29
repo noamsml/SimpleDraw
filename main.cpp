@@ -6,7 +6,7 @@
 
 
 MainWindow::MainWindow() : 	mainbox(false,10), toolbox("Tools"),
-							settingbox("Tool settings"), randomtestarea(300,300), scale_label("Scale")
+							settingbox("Tool settings"), randomtestarea(300,300, "hiworld"), scale_label("Scale")
 {
 	
 	

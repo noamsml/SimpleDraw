@@ -17,21 +17,24 @@ class Tool
 class ImageArea : public Layout
 {
 	public:
+	Glib::ustring name;
 	Cairo::RefPtr<Cairo::ImageSurface> drawing;
-	Cairo::RefPtr<Cairo::SurfacePattern> dpattern;
-	Cairo::RefPtr<Cairo::Context> dcontext;
+	Cairo::RefPtr<Cairo::SurfacePattern> drawingPattern;
+	Cairo::RefPtr<Cairo::Context> drawingContext;
 
 	//Display buffer
+	//used for tools that need to display stuff on the screen that will
+	//not be part of the drawing itself
 	Cairo::RefPtr<Cairo::ImageSurface> buffer;
-	Cairo::RefPtr<Cairo::SurfacePattern> bpattern;
-	Cairo::RefPtr<Cairo::Context> bcontext;
+	Cairo::RefPtr<Cairo::SurfacePattern> bufferPattern;
+	Cairo::RefPtr<Cairo::Context> bufferContext;
 	Tool* tool;
 	int width;
 	int height;
 
 	float scale;
 
-	ImageArea(int width, int height);
+	ImageArea(int width, int height, Glib::ustring name);
 
 	bool on_button_press_event(GdkEventButton* buttons);
 	bool on_button_release_event(GdkEventButton* buttons);

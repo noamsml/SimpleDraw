@@ -8,13 +8,13 @@ void FreeHand::mouse_down(ImageArea* ia, double x, double y)
 
 void FreeHand::mouse_up(ImageArea* ia, double x, double y)
 {
-	ia->dcontext->save();
-	ia->dcontext->set_line_cap(Cairo::LINE_CAP_ROUND);
-	ia->dcontext->move_to(lastx,lasty);
-	ia->dcontext->line_to(x,y);
-	ia->dcontext->set_line_width(width);
-	ia->dcontext->stroke();
-	ia->dcontext->restore();
+	ia->drawingContext->save();
+	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
+	ia->drawingContext->move_to(lastx,lasty);
+	ia->drawingContext->line_to(x,y);
+	ia->drawingContext->set_line_width(width);
+	ia->drawingContext->stroke();
+	ia->drawingContext->restore();
 
 	//sorry
 	ia->update_buffer();
@@ -33,13 +33,13 @@ void FreeHand::mouse_drag(ImageArea* ia, double x, double y)
 	double boxw = (x < lastx) ? lastx - x + 20 : x - lastx + 20;
 	double boxh = (y < lasty) ? lasty - y + 20 : y - lasty + 20;
 
-	ia->dcontext->save();
-	ia->dcontext->set_line_cap(Cairo::LINE_CAP_ROUND);
-	ia->dcontext->move_to(lastx,lasty);
-	ia->dcontext->line_to(x,y);
-	ia->dcontext->set_line_width(width);
-	ia->dcontext->stroke();
-	ia->dcontext->restore();
+	ia->drawingContext->save();
+	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
+	ia->drawingContext->move_to(lastx,lasty);
+	ia->drawingContext->line_to(x,y);
+	ia->drawingContext->set_line_width(width);
+	ia->drawingContext->stroke();
+	ia->drawingContext->restore();
 
 	lastx=x;
 	lasty=y;
@@ -67,9 +67,9 @@ void DrawLine::mouse_drag(ImageArea* ia, double x, double y)
 
 	ia->update_buffer();
 
-	Cairo::RefPtr<Cairo::Context> wcontext = ia->bcontext;
+	Cairo::RefPtr<Cairo::Context> wcontext = ia->bufferContext;
 	wcontext->save();
-	wcontext->set_source(ia->dcontext->get_source());
+	wcontext->set_source(ia->drawingContext->get_source());
 	wcontext->set_line_cap(Cairo::LINE_CAP_ROUND);
 	wcontext->move_to(firstx,firsty);
 	wcontext->line_to(x,y);
@@ -84,13 +84,13 @@ void DrawLine::mouse_drag(ImageArea* ia, double x, double y)
 
 void DrawLine::mouse_up(ImageArea* ia, double x, double y)
 {
-	ia->dcontext->save();
-	ia->dcontext->set_line_cap(Cairo::LINE_CAP_ROUND);
-	ia->dcontext->move_to(firstx,firsty);
-	ia->dcontext->line_to(x,y);
-	ia->dcontext->set_line_width(width);
-	ia->dcontext->stroke();
-	ia->dcontext->restore();
+	ia->drawingContext->save();
+	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
+	ia->drawingContext->move_to(firstx,firsty);
+	ia->drawingContext->line_to(x,y);
+	ia->drawingContext->set_line_width(width);
+	ia->drawingContext->stroke();
+	ia->drawingContext->restore();
 
 	ia->update_drawing();
 	lastx = x;

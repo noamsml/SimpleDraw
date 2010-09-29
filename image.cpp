@@ -1,7 +1,7 @@
 #include "image.h"
 #include <stdio.h>
 
-ImageArea::ImageArea (int width, int height)
+ImageArea::ImageArea (int width, int height, Glib::ustring name)
 {
 	this->width = width;
 	this->height = height;
@@ -10,22 +10,22 @@ ImageArea::ImageArea (int width, int height)
 
 
 	drawing = Cairo::ImageSurface::create(Cairo::FORMAT_RGB24, width, height);
-	dcontext = Cairo::Context::create(drawing);
-	dpattern = Cairo::SurfacePattern::create(drawing);
-
+	drawingContext = Cairo::Context::create(drawing);
+	drawingPattern = Cairo::SurfacePattern::create(drawing);
+	this->name = name;
 
 	//Initial image for your enjoyment
-	dcontext->set_source_rgb(255,255,255);
-	dcontext->rectangle(0,0,width, height);
-	dcontext->fill();
-	dcontext->set_source_rgb(0,0,0);
+	drawingContext->set_source_rgb(255,255,255);
+	drawingContext->rectangle(0,0,width, height);
+	drawingContext->fill();
+	drawingContext->set_source_rgb(0,0,0);
 
-	dpattern->set_filter(Cairo::FILTER_FAST);
+	drawingPattern->set_filter(Cairo::FILTER_FAST);
 
 	buffer = Cairo::ImageSurface::create(Cairo::FORMAT_RGB24, width, height);
-	bcontext = Cairo::Context::create(buffer);
-	bpattern = Cairo::SurfacePattern::create(buffer);
-	bpattern->set_filter(Cairo::FILTER_FAST);
+	bufferContext = Cairo::Context::create(buffer);
+	bufferPattern = Cairo::SurfacePattern::create(buffer);
+	bufferPattern->set_filter(Cairo::FILTER_FAST);
 	scale = 1;
 }
 
@@ -79,32 +79,32 @@ void ImageArea::update_stuff(Cairo::RefPtr<Cairo::Context> to, Cairo::RefPtr<Cai
 
 void ImageArea::update_drawing()
 {
-	update_stuff(get_dwindow()->create_cairo_context(), dpattern, 0,0,width,height,true);
+	update_stuff(get_dwindow()->create_cairo_context(), drawingPattern, 0,0,width,height,true);
 }
 
 void ImageArea::update_drawing(double x, double y, double w, double h)
 {
-	update_stuff(get_dwindow()->create_cairo_context(), dpattern, x,y,w,h,true);
+	update_stuff(get_dwindow()->create_cairo_context(), drawingPattern, x,y,w,h,true);
 }
 
 void ImageArea::update_buffer()
 {
-	update_stuff(bcontext, dpattern, 0,0,width,height,false);
+	update_stuff(bufferContext, drawingPattern, 0,0,width,height,false);
 }
 
 void ImageArea::update_buffer(double x, double y, double w, double h)
 {
-	update_stuff(bcontext, dpattern, x,y,w,h,false);
+	update_stuff(bufferContext, drawingPattern, x,y,w,h,false);
 }
 
 void ImageArea::update_from_buffer()
 {
-	update_stuff(get_dwindow()->create_cairo_context(), bpattern, 0,0,width,height,true);
+	update_stuff(get_dwindow()->create_cairo_context(), bufferPattern, 0,0,width,height,true);
 }
 
 void ImageArea::update_from_buffer(double x, double y, double w, double h)
 {
-	update_stuff(get_dwindow()->create_cairo_context(), bpattern, x,y,w,h,true);
+	update_stuff(get_dwindow()->create_cairo_context(), bufferPattern, x,y,w,h,true);
 }
 
 double ImageArea::trans_x(double x) { return x / scale; }
@@ -121,7 +121,7 @@ void ImageArea::change_tool(Tool* t)
 void ImageArea::set_color(double r, double g, double b)
 {
 	printf("Called with %f %f %f\n", r, g,b);
-	dcontext->set_source_rgb(r,g,b);
+	drawingContext->set_source_rgb(r,g,b);
 }
 
 Glib::RefPtr<Gdk::Window> ImageArea::get_dwindow()
