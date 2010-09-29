@@ -1,7 +1,7 @@
 #include "image.h"
 #include <stdio.h>
 
-ImageArea::ImageArea (int width, int height, Glib::ustring name)
+ImageArea::ImageArea (int width, int height)
 {
 	this->width = width;
 	this->height = height;
@@ -12,7 +12,6 @@ ImageArea::ImageArea (int width, int height, Glib::ustring name)
 	drawing = Cairo::ImageSurface::create(Cairo::FORMAT_RGB24, width, height);
 	drawingContext = Cairo::Context::create(drawing);
 	drawingPattern = Cairo::SurfacePattern::create(drawing);
-	this->name = name;
 
 	//Initial image for your enjoyment
 	drawingContext->set_source_rgb(255,255,255);

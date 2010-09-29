@@ -17,7 +17,6 @@ class Tool
 class ImageArea : public Layout
 {
 	public:
-	Glib::ustring name;
 	Cairo::RefPtr<Cairo::ImageSurface> drawing;
 	Cairo::RefPtr<Cairo::SurfacePattern> drawingPattern;
 	Cairo::RefPtr<Cairo::Context> drawingContext;
@@ -34,7 +33,7 @@ class ImageArea : public Layout
 
 	float scale;
 
-	ImageArea(int width, int height, Glib::ustring name);
+	ImageArea(int width, int height);
 
 	bool on_button_press_event(GdkEventButton* buttons);
 	bool on_button_release_event(GdkEventButton* buttons);
