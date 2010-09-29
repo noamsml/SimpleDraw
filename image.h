@@ -14,7 +14,7 @@ class Tool
 	virtual ~Tool();
 };
 
-class ImageArea : public DrawingArea
+class ImageArea : public Layout
 {
 	public:
 	Cairo::RefPtr<Cairo::ImageSurface> drawing;
@@ -29,7 +29,7 @@ class ImageArea : public DrawingArea
 	int width;
 	int height;
 
-	int scale;
+	float scale;
 
 	ImageArea(int width, int height);
 
@@ -56,6 +56,9 @@ class ImageArea : public DrawingArea
 	double untrans_y(double y);
 
 	void change_tool(Tool* t);
+
+	void resize_img(double sc);
+	Glib::RefPtr<Gdk::Window> get_dwindow();
 };
 
 #endif

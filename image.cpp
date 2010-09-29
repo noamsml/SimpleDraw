@@ -62,7 +62,7 @@ bool ImageArea::on_expose_event(GdkEventExpose* expose)
 
 void ImageArea::clear_window()
 {
-	Cairo::RefPtr<Cairo::Context> wcontext = get_window() -> create_cairo_context();
+	Cairo::RefPtr<Cairo::Context> wcontext = get_dwindow() -> create_cairo_context();
 	wcontext->set_source_rgb(0.6,0.6,0.6);
 	wcontext->paint();
 }
@@ -79,12 +79,12 @@ void ImageArea::update_stuff(Cairo::RefPtr<Cairo::Context> to, Cairo::RefPtr<Cai
 
 void ImageArea::update_drawing()
 {
-	update_stuff(get_window()->create_cairo_context(), dpattern, 0,0,width,height,true);
+	update_stuff(get_dwindow()->create_cairo_context(), dpattern, 0,0,width,height,true);
 }
 
 void ImageArea::update_drawing(double x, double y, double w, double h)
 {
-	update_stuff(get_window()->create_cairo_context(), dpattern, x,y,w,h,true);
+	update_stuff(get_dwindow()->create_cairo_context(), dpattern, x,y,w,h,true);
 }
 
 void ImageArea::update_buffer()
@@ -99,12 +99,12 @@ void ImageArea::update_buffer(double x, double y, double w, double h)
 
 void ImageArea::update_from_buffer()
 {
-	update_stuff(get_window()->create_cairo_context(), bpattern, 0,0,width,height,true);
+	update_stuff(get_dwindow()->create_cairo_context(), bpattern, 0,0,width,height,true);
 }
 
 void ImageArea::update_from_buffer(double x, double y, double w, double h)
 {
-	update_stuff(get_window()->create_cairo_context(), bpattern, x,y,w,h,true);
+	update_stuff(get_dwindow()->create_cairo_context(), bpattern, x,y,w,h,true);
 }
 
 double ImageArea::trans_x(double x) { return x / scale; }
@@ -114,7 +114,7 @@ double ImageArea::untrans_y(double y) { return y*scale; }
 
 void ImageArea::change_tool(Tool* t)
 {
-	if (tool) delete tool;
+	//if (tool) delete tool; //NO
 	tool = t;
 }
 
@@ -124,4 +124,15 @@ void ImageArea::set_color(double r, double g, double b)
 	dcontext->set_source_rgb(r,g,b);
 }
 
+Glib::RefPtr<Gdk::Window> ImageArea::get_dwindow()
+{
+	return get_bin_window();
+}
+
+void ImageArea::resize_img(double sc)
+{
+	scale = sc;
+}
+
 Tool::~Tool() {}
+

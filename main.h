@@ -5,6 +5,14 @@
 #include "image.h"
 #include "tools.h"
 
+class ToolColumn : public TreeModelColumnRecord {
+	public:
+		ToolColumn();
+		
+		TreeModelColumn<Glib::ustring> colname;
+		TreeModelColumn<Tool*> tooldata;
+};
+
 class MainWindow : public Window
 {
 	public:
@@ -22,12 +30,19 @@ class MainWindow : public Window
 	Label scale_label;
 	HBox scale_hbox;
 	ColorButton choose_color;
-
+	
+	ToolColumn toolcol;
+	Glib::RefPtr<ListStore> toolstore;
+	TreeView toolview;
+	
 	MainWindow();
 
 	void scale_activated();
 	void change_color();
+	void tool_changed();
+	TreeModel::Row add_tool(Glib::ustring name, Tool* tool); 
 };
+
 
 
 #endif

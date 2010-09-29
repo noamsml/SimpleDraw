@@ -1,5 +1,5 @@
 OBJECT_FILES=main.o image.o tools.o
-CFLAGS=--debug `pkg-config gtkmm-2.4 --cflags --libs`
+CFLAGS=--debug `pkg-config gtkmm-2.4 cairomm-1.0 --cflags --libs`
 
 all: simpledraw
 
