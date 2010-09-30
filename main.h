@@ -15,14 +15,13 @@ class ToolColumn : public TreeModelColumnRecord {
 
 class MainWindow : public Window
 {
-	public:
+	private:
 	VPaned tools;
 	Frame toolbox;
 	Frame settingbox;
 	Notebook documents;
 	HBox mainbox;
 	VButtonBox toolbox_vert;
-	ImageArea randomtestarea;
 	VBox mainarea_layout;
 	HBox minibar_layout;
 
@@ -35,12 +34,27 @@ class MainWindow : public Window
 	Glib::RefPtr<ListStore> toolstore;
 	TreeView toolview;
 	
+	Glib::RefPtr<ActionGroup> MenuActions;
+	Glib::RefPtr<UIManager> MenuUI;
+	
+	
+	void populate_tools();
+	void populate_menus();
+	void populate_window();
+	TreeModel::Row add_tool(Glib::ustring name, Tool* tool); 
+	
+	public:
 	MainWindow();
+	void new_image_tab();
+	void quit();
+	ImageArea* get_current_tab();
+	
 
 	void scale_activated();
 	void change_color();
 	void tool_changed();
-	TreeModel::Row add_tool(Glib::ustring name, Tool* tool); 
+	void change_all_data(); //right now changes Image to match MainWindow. Can reverse later.
+	
 };
 
 
