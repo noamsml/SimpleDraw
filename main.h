@@ -76,6 +76,7 @@ class MainWindow : public Window
 	void change_color();
 	void tool_changed();
 	void change_all_data(); //right now changes Image to match MainWindow. Can reverse later.
+	void notebook_selectchanged(Widget* w, guint num_page);
 	
 };
 

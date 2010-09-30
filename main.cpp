@@ -56,8 +56,6 @@ void MainWindow::populate_window()
 	
 	mainbox.pack_start(tools, false, false);
 	mainbox.pack_end(mainarea_layout, true, true);
-	documents.append_page(*(new ImageArea(300, 300)), "Hello world");
-	documents.append_page(*(new ImageArea(100, 300)), "Hello world2");
 	mainarea_layout.pack_start(documents, true, true);
 	mainarea_layout.pack_end(minibar_layout, false, false);
 
@@ -70,6 +68,7 @@ void MainWindow::populate_window()
 	scale_entry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::scale_activated));
 	choose_color.signal_color_set().connect(sigc::mem_fun(*this, &MainWindow::change_color));
 	newdoc.new_doc_made.connect(sigc::mem_fun(*this, &MainWindow::new_image_tab));
+	scale_entry.set_text("1");
 	
 }
 
@@ -91,7 +90,7 @@ void MainWindow::scale_activated()
 	ImageArea* image = get_current_tab();
 	
 	int conv = sscanf(scale_entry.get_text().c_str(), "%f", &scl);
-	if (!conv) 
+	if (!conv || scl <= 0) 
 	{
 		scale_entry.set_text("1");
 		scl = 1;
@@ -133,6 +132,11 @@ void MainWindow::change_all_data()
 	scale_activated(); //Also draws the image. Powah!
 }
 
+void MainWindow::notebook_selectchanged(Widget* w, guint num_page)
+{
+	change_all_data();
+}
+
 TreeModel::Row MainWindow::add_tool(Glib::ustring name, Tool* tool)
 {
 	TreeModel::iterator tooltriter;
@@ -148,9 +152,15 @@ TreeModel::Row MainWindow::add_tool(Glib::ustring name, Tool* tool)
 
 void MainWindow::new_image_tab(int w, int h)
 {
-	//TOFIX: no reference-counting on this pointer
+	int i;
+	std::cout << w << " :: " << h << std::endl;
+	ImageArea* wid = new ImageArea(w,h);
+	//TOFIX: no reference-counting on this pointer (?)
 	std::cout << "Newdoc" << std::endl;
-	documents.append_page(*(new ImageArea(w,h)), "New Document");
+	std::cout << (i = documents.append_page(*wid, "New Document")) << std::endl;
+	documents.show_all();
+	documents.set_current_page(i);
+	change_all_data();
 }
 
 void MainWindow::quit()
