@@ -5,12 +5,29 @@
 #include "image.h"
 #include "tools.h"
 
+
 class ToolColumn : public TreeModelColumnRecord {
 	public:
 		ToolColumn();
 		
 		TreeModelColumn<Glib::ustring> colname;
 		TreeModelColumn<Tool*> tooldata;
+};
+
+class NewDocumentBox : public HBox {
+	private:
+		Label wlabel;
+		Entry wentry;
+		Label hlabel;
+		Entry hentry;
+		Button newbtn;
+		
+		void rebounce_signal();
+	public:
+		sigc::signal<void, int, int > new_doc_made;
+		NewDocumentBox();
+		
+		
 };
 
 class MainWindow : public Window
@@ -20,10 +37,12 @@ class MainWindow : public Window
 	Frame toolbox;
 	Frame settingbox;
 	Notebook documents;
+	VBox winbox;
 	HBox mainbox;
 	VButtonBox toolbox_vert;
 	VBox mainarea_layout;
 	HBox minibar_layout;
+	NewDocumentBox newdoc;
 
 	Entry scale_entry;
 	Label scale_label;
@@ -33,6 +52,7 @@ class MainWindow : public Window
 	ToolColumn toolcol;
 	Glib::RefPtr<ListStore> toolstore;
 	TreeView toolview;
+	Widget* menubar;
 	
 	Glib::RefPtr<ActionGroup> MenuActions;
 	Glib::RefPtr<UIManager> MenuUI;
@@ -45,9 +65,11 @@ class MainWindow : public Window
 	
 	public:
 	MainWindow();
-	void new_image_tab();
+	void new_image_tab(int w, int h);
+	void new_image_dialog();
 	void quit();
 	ImageArea* get_current_tab();
+	
 	
 
 	void scale_activated();
