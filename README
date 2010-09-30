@@ -2,4 +2,3 @@ I'm an empty readme :(
 
 REQUIRES: GtkMM (dev libs), CairoMM (dev libs)
 
-NOTE: On Ubuntu 10.04 you must run "sudo touch /usr/include/cairomm-1.0/cairomm/cairommconfig.h" to compile this. Sorry.
