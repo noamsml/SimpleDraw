@@ -9,13 +9,11 @@ class GlobalSettings;
 
 class Tool
 {
-	protected:
-	Widget* settingspane;
 	public:
 	virtual void mouse_down(ImageArea* ia,  double x, double y)=0;
 	virtual void mouse_up(ImageArea* ia,  double x, double y)=0;
 	virtual void mouse_drag(ImageArea* ia,  double x, double y)=0;
-	Widget* get_settings_pane();
+	virtual Widget* get_settings_pane()=0;
 	virtual ~Tool();
 };
 

@@ -16,27 +16,29 @@ class LineSettingsPane : public VBox
 	Entry widthEntry;
 	
 	sigc::signal<void, LineSettingsPane*> width_changed;
-	float get_width();
+	float get_line_width();
 	LineSettingsPane();
 };
 
 class FreeHand : public Tool
 {
 	public:
+	LineSettingsPane lsp;
 	double lastx;
 	double lasty;
-	double width;
 
 	FreeHand();
 	void mouse_down(ImageArea* ia, double x, double y);
 	void mouse_up(ImageArea* ia, double x, double y);
 	void mouse_drag(ImageArea* ia, double x, double y);
+	Widget* get_settings_pane();
 };
 
 
 class DrawLine : public Tool
 {
 	public:
+	LineSettingsPane lsp;
 	double firstx;
 	double firsty;
 	double lastx;
@@ -49,5 +51,6 @@ class DrawLine : public Tool
 	void mouse_down(ImageArea* ia, double x, double y);
 	void mouse_up(ImageArea* ia, double x, double y);
 	void mouse_drag(ImageArea* ia, double x, double y);
+	Widget* get_settings_pane();
 };
 #endif

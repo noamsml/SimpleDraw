@@ -12,7 +12,7 @@ void FreeHand::mouse_up(ImageArea* ia, double x, double y)
 	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
 	ia->drawingContext->move_to(lastx,lasty);
 	ia->drawingContext->line_to(x,y);
-	ia->drawingContext->set_line_width(width);
+	ia->drawingContext->set_line_width(lsp.get_line_width());
 	ia->drawingContext->stroke();
 	ia->drawingContext->restore();
 
@@ -23,8 +23,7 @@ void FreeHand::mouse_up(ImageArea* ia, double x, double y)
 
 FreeHand::FreeHand()
 {
-	width = 15;
-	settingspane = new Button("FreeHand");
+	
 }
 
 void FreeHand::mouse_drag(ImageArea* ia, double x, double y)
@@ -38,7 +37,7 @@ void FreeHand::mouse_drag(ImageArea* ia, double x, double y)
 	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
 	ia->drawingContext->move_to(lastx,lasty);
 	ia->drawingContext->line_to(x,y);
-	ia->drawingContext->set_line_width(width);
+	ia->drawingContext->set_line_width(lsp.get_line_width());
 	ia->drawingContext->stroke();
 	ia->drawingContext->restore();
 
@@ -52,8 +51,7 @@ void FreeHand::mouse_drag(ImageArea* ia, double x, double y)
 
 DrawLine::DrawLine()
 {
-	width = 5;
-	settingspane = new Button("DrawLine");
+	
 }
 
 
@@ -76,7 +74,7 @@ void DrawLine::mouse_drag(ImageArea* ia, double x, double y)
 	wcontext->set_line_cap(Cairo::LINE_CAP_ROUND);
 	wcontext->move_to(firstx,firsty);
 	wcontext->line_to(x,y);
-	wcontext->set_line_width(width);
+	wcontext->set_line_width(lsp.get_line_width());
 	wcontext->stroke();
 	wcontext->restore();
 
@@ -91,7 +89,7 @@ void DrawLine::mouse_up(ImageArea* ia, double x, double y)
 	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
 	ia->drawingContext->move_to(firstx,firsty);
 	ia->drawingContext->line_to(x,y);
-	ia->drawingContext->set_line_width(width);
+	ia->drawingContext->set_line_width(lsp.get_line_width());
 	ia->drawingContext->stroke();
 	ia->drawingContext->restore();
 
@@ -107,9 +105,10 @@ LineSettingsPane::LineSettingsPane() : widthLabel("Width: ")
 	widthEntry.signal_activate().connect(
 		sigc::bind( sigc::mem_fun(width_changed, &sigc::signal<void, LineSettingsPane*>::emit), this )
 	);
+	
 }
 
-float LineSettingsPane::get_width()
+float LineSettingsPane::get_line_width()
 {
 	float rval;
 	if (sscanf(widthEntry.get_text().c_str(), "%f", &rval))
@@ -121,5 +120,14 @@ float LineSettingsPane::get_width()
 	}
 }
 
+Widget* FreeHand::get_settings_pane()
+{
+	return &lsp;
+}
+
+Widget* DrawLine::get_settings_pane()
+{
+	return &lsp;
+}
 
 

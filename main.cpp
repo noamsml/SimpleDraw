@@ -124,6 +124,7 @@ void MainWindow::tool_changed()
 	gs.tool = t;
 	settingbox.remove();
 	settingbox.add(*(t->get_settings_pane()));
+	settingbox.show_all();
 }
 
 
