@@ -13,7 +13,7 @@ class LineSettingsPane : public VBox
 {
 	public:
 	Label widthLabel;
-	Entry widthEntry;
+	HScale widthEntry;
 	
 	sigc::signal<void, LineSettingsPane*> width_changed;
 	float get_line_width();

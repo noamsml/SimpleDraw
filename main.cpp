@@ -64,23 +64,27 @@ void MainWindow::populate_window()
 	gs.color = Gdk::Color("000000");
 	gs.scale = 1;
 	
+	minibar_layout.set_spacing(5);
 	minibar_layout.pack_start(scale_label, false, false);
-	minibar_layout.pack_start(scale_entry, false, false);
+	minibar_layout.pack_start(scale_range, false, false);
 	minibar_layout.pack_end(choose_color, false, false);
+	
 	winbox.pack_start(*menubar, PACK_SHRINK);
 	winbox.pack_start(newdoc, PACK_SHRINK);
 	winbox.pack_end(mainbox, true, true);
-	scale_entry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::scale_activated));
+	scale_range.signal_value_changed().connect(sigc::mem_fun(*this, &MainWindow::scale_activated));
 	choose_color.signal_color_set().connect(sigc::mem_fun(*this, &MainWindow::change_color));
 	newdoc.new_doc_made.connect(sigc::mem_fun(*this, &MainWindow::new_image_tab));
-	scale_entry.set_text("1");
+	scale_range.set_value(1);
+	scale_range.set_size_request(200, -1);
 	
 }
 
 
 
 MainWindow::MainWindow() : 	mainbox(false,10), toolbox("Tools"),
-							settingbox("Tool settings"), scale_label("Scale")
+							settingbox("Tool settings"), scale_label("Scale", ALIGN_LEFT, ALIGN_BOTTOM),
+							scale_range(0.5, 4, 0.5)
 {	
 	populate_tools();
 	populate_menus();
@@ -91,17 +95,11 @@ MainWindow::MainWindow() : 	mainbox(false,10), toolbox("Tools"),
 
 void MainWindow::scale_activated()
 {
-	float scl;
 	ImageArea* image = get_current_tab();
 	
-	int conv = sscanf(scale_entry.get_text().c_str(), "%f", &scl);
-	if (!conv || scl <= 0) 
-	{
-		scale_entry.set_text("1");
-		scl = 1;
-	}
 	
-	gs.scale = scl;
+	
+	gs.scale = scale_range.get_value();
 	
 	if (image)
 	{

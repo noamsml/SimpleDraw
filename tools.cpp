@@ -98,11 +98,11 @@ void DrawLine::mouse_up(ImageArea* ia, double x, double y)
 	lasty = y;
 }
 
-LineSettingsPane::LineSettingsPane() : widthLabel("Width: ")
+LineSettingsPane::LineSettingsPane() : widthLabel("Width: "), widthEntry(1, 20, 2)
 {
 	pack_start(widthLabel, false, false);
 	pack_start(widthEntry, false, false);
-	widthEntry.signal_activate().connect(
+	widthEntry.signal_value_changed().connect(
 		sigc::bind( sigc::mem_fun(width_changed, &sigc::signal<void, LineSettingsPane*>::emit), this )
 	);
 	
@@ -110,14 +110,7 @@ LineSettingsPane::LineSettingsPane() : widthLabel("Width: ")
 
 float LineSettingsPane::get_line_width()
 {
-	float rval;
-	if (sscanf(widthEntry.get_text().c_str(), "%f", &rval))
-		return rval;
-	else 
-	{
-		return 10;
-		widthEntry.set_text("10");
-	}
+	return widthEntry.get_value();
 }
 
 Widget* FreeHand::get_settings_pane()

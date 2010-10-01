@@ -43,7 +43,7 @@ class MainWindow : public Window
 	HBox minibar_layout;
 	NewDocumentBox newdoc;
 
-	Entry scale_entry;
+	HScale scale_range;
 	Label scale_label;
 	HBox scale_hbox;
 	ColorButton choose_color;
