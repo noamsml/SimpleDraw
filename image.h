@@ -4,14 +4,24 @@
 #include "gtklibs.h"
 
 class ImageArea;
+class Tool;
+class GlobalSettings;
 
 class Tool
 {
 	public:
-	virtual void mouse_down(ImageArea* ia, double x, double y)=0;
-	virtual void mouse_up(ImageArea* ia, double x, double y)=0;
-	virtual void mouse_drag(ImageArea* ia, double x, double y)=0;
+	virtual void mouse_down(ImageArea* ia,  double x, double y)=0;
+	virtual void mouse_up(ImageArea* ia,  double x, double y)=0;
+	virtual void mouse_drag(ImageArea* ia,  double x, double y)=0;
 	virtual ~Tool();
+};
+
+class GlobalSettings
+{
+	public:
+		Gdk::Color color;
+		float scale;
+		Tool* tool;
 };
 
 class ImageArea : public Layout
@@ -27,13 +37,15 @@ class ImageArea : public Layout
 	Cairo::RefPtr<Cairo::ImageSurface> buffer;
 	Cairo::RefPtr<Cairo::SurfacePattern> bufferPattern;
 	Cairo::RefPtr<Cairo::Context> bufferContext;
-	Tool* tool;
+	
+	GlobalSettings* gs;
+	Glib::ustring fname;
+	
 	int width;
 	int height;
-
-	float scale;
-
-	ImageArea(int width, int height);
+	int scale_last_rendered;
+	
+	ImageArea(int width, int height, GlobalSettings* settings, Glib::ustring name="");
 
 	bool on_button_press_event(GdkEventButton* buttons);
 	bool on_button_release_event(GdkEventButton* buttons);
@@ -49,15 +61,13 @@ class ImageArea : public Layout
 	void update_from_buffer(double x, double y, double w, double h);
 
 	void clear_window();
-	void set_color(double r, double g, double b);
+	void set_color(Gdk::Color);
 
 	double trans_x(double x);
 	double trans_y(double y);
 
 	double untrans_x(double x);
 	double untrans_y(double y);
-
-	void change_tool(Tool* t);
 
 	void resize_img(double sc);
 	Glib::RefPtr<Gdk::Window> get_dwindow();

@@ -5,7 +5,6 @@
 #include "image.h"
 #include "tools.h"
 
-
 class ToolColumn : public TreeModelColumnRecord {
 	public:
 		ToolColumn();
@@ -54,6 +53,8 @@ class MainWindow : public Window
 	TreeView toolview;
 	Widget* menubar;
 	
+	GlobalSettings gs;
+	
 	Glib::RefPtr<ActionGroup> MenuActions;
 	Glib::RefPtr<UIManager> MenuUI;
 	
@@ -75,8 +76,6 @@ class MainWindow : public Window
 	void scale_activated();
 	void change_color();
 	void tool_changed();
-	void change_all_data(); //right now changes Image to match MainWindow. Can reverse later.
-	void notebook_selectchanged(Widget* w, guint num_page);
 	
 };
 

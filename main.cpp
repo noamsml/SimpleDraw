@@ -12,6 +12,7 @@ void MainWindow::populate_tools()
 	
 	
 	FreeHand* starttool = new FreeHand();
+	gs.tool = starttool;
 	Glib::RefPtr<TreeSelection> sel = toolview.get_selection();
 	sel->select(add_tool("Free Hand", starttool));
 	add_tool("Draw Line", new DrawLine());
@@ -59,6 +60,9 @@ void MainWindow::populate_window()
 	mainarea_layout.pack_start(documents, true, true);
 	mainarea_layout.pack_end(minibar_layout, false, false);
 
+	gs.color = Gdk::Color("000000");
+	gs.scale = 1;
+	
 	minibar_layout.pack_start(scale_label, false, false);
 	minibar_layout.pack_start(scale_entry, false, false);
 	minibar_layout.pack_end(choose_color, false, false);
@@ -97,7 +101,7 @@ void MainWindow::scale_activated()
 	}
 	if (image)
 	{
-		image->scale = scl;
+		gs.scale = scl;
 		image->clear_window();
 		image->update_drawing();
 	}
@@ -109,7 +113,7 @@ void MainWindow::change_color()
 	if (image)
 	{
 		Gdk::Color c = choose_color.get_color();
-		image->set_color(c.get_red_p(), c.get_green_p(), c.get_blue_p());
+		gs.color = c;
 	}
 }
 
@@ -121,21 +125,11 @@ void MainWindow::tool_changed()
 		TreeModel::iterator sel = toolview.get_selection()->get_selected();
 		std::cout << (*sel)[toolcol.colname] << " SELECTED\n";
 		Tool* t = (*sel)[toolcol.tooldata];
-		image->change_tool(t);
+		gs.tool = t;
 	}
 }
 
-void MainWindow::change_all_data()
-{
-	change_color();
-	tool_changed();
-	scale_activated(); //Also draws the image. Powah!
-}
 
-void MainWindow::notebook_selectchanged(Widget* w, guint num_page)
-{
-	change_all_data();
-}
 
 TreeModel::Row MainWindow::add_tool(Glib::ustring name, Tool* tool)
 {
@@ -154,13 +148,12 @@ void MainWindow::new_image_tab(int w, int h)
 {
 	int i;
 	std::cout << w << " :: " << h << std::endl;
-	ImageArea* wid = new ImageArea(w,h);
+	ImageArea* wid = new ImageArea(w,h, &gs, "");
 	//TOFIX: no reference-counting on this pointer (?)
 	std::cout << "Newdoc" << std::endl;
 	std::cout << (i = documents.append_page(*wid, "New Document")) << std::endl;
 	documents.show_all();
 	documents.set_current_page(i);
-	change_all_data();
 }
 
 void MainWindow::quit()
