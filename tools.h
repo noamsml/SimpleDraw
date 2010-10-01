@@ -9,6 +9,17 @@
 #include "gtklibs.h"
 #include "image.h"
 
+class LineSettingsPane : public VBox
+{
+	public:
+	Label widthLabel;
+	Entry widthEntry;
+	
+	sigc::signal<void, LineSettingsPane*> width_changed;
+	float get_width();
+	LineSettingsPane();
+};
+
 class FreeHand : public Tool
 {
 	public:

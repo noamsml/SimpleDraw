@@ -13,6 +13,7 @@ void MainWindow::populate_tools()
 	
 	FreeHand* starttool = new FreeHand();
 	gs.tool = starttool;
+	settingbox.add(*(gs.tool->get_settings_pane()));
 	Glib::RefPtr<TreeSelection> sel = toolview.get_selection();
 	sel->select(add_tool("Free Hand", starttool));
 	add_tool("Draw Line", new DrawLine());
@@ -99,9 +100,11 @@ void MainWindow::scale_activated()
 		scale_entry.set_text("1");
 		scl = 1;
 	}
+	
+	gs.scale = scl;
+	
 	if (image)
 	{
-		gs.scale = scl;
 		image->clear_window();
 		image->update_drawing();
 	}
@@ -109,24 +112,18 @@ void MainWindow::scale_activated()
 
 void MainWindow::change_color()
 {
-	ImageArea* image = get_current_tab();
-	if (image)
-	{
 		Gdk::Color c = choose_color.get_color();
 		gs.color = c;
-	}
 }
 
 void MainWindow::tool_changed()
 {
-	ImageArea* image = get_current_tab();
-	if (image)
-	{
-		TreeModel::iterator sel = toolview.get_selection()->get_selected();
-		std::cout << (*sel)[toolcol.colname] << " SELECTED\n";
-		Tool* t = (*sel)[toolcol.tooldata];
-		gs.tool = t;
-	}
+	TreeModel::iterator sel = toolview.get_selection()->get_selected();
+	std::cout << (*sel)[toolcol.colname] << " SELECTED\n";
+	Tool* t = (*sel)[toolcol.tooldata];
+	gs.tool = t;
+	settingbox.remove();
+	settingbox.add(*(t->get_settings_pane()));
 }
 
 

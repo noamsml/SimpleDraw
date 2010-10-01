@@ -129,3 +129,8 @@ Glib::RefPtr<Gdk::Window> ImageArea::get_dwindow()
 
 Tool::~Tool() {}
 
+Widget* Tool::get_settings_pane()
+{
+	return settingspane;
+}
+

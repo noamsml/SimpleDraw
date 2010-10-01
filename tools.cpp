@@ -24,6 +24,7 @@ void FreeHand::mouse_up(ImageArea* ia, double x, double y)
 FreeHand::FreeHand()
 {
 	width = 15;
+	settingspane = new Button("FreeHand");
 }
 
 void FreeHand::mouse_drag(ImageArea* ia, double x, double y)
@@ -44,13 +45,15 @@ void FreeHand::mouse_drag(ImageArea* ia, double x, double y)
 	lastx=x;
 	lasty=y;
 	ia->update_drawing(boxx, boxy, boxw, boxh);
-}
+};
+
 
 
 
 DrawLine::DrawLine()
 {
 	width = 5;
+	settingspane = new Button("DrawLine");
 }
 
 
@@ -96,4 +99,27 @@ void DrawLine::mouse_up(ImageArea* ia, double x, double y)
 	lastx = x;
 	lasty = y;
 }
+
+LineSettingsPane::LineSettingsPane() : widthLabel("Width: ")
+{
+	pack_start(widthLabel, false, false);
+	pack_start(widthEntry, false, false);
+	widthEntry.signal_activate().connect(
+		sigc::bind( sigc::mem_fun(width_changed, &sigc::signal<void, LineSettingsPane*>::emit), this )
+	);
+}
+
+float LineSettingsPane::get_width()
+{
+	float rval;
+	if (sscanf(widthEntry.get_text().c_str(), "%f", &rval))
+		return rval;
+	else 
+	{
+		return 10;
+		widthEntry.set_text("10");
+	}
+}
+
+
 
