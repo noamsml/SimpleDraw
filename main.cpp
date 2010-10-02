@@ -213,13 +213,19 @@ void NewDocumentBox::rebounce_signal()
 
 void MainWindow::open_image_dialog()
 {
-	int i;
+	int i, loc;
 	MessageDialog errmsg("Open failed", false, MESSAGE_ERROR);
+	Glib::ustring fname;
 	if (open_dialog.run())
 	{
 		try
 		{
-			i = documents.append_page(*(new ImageArea(open_dialog.get_filename(), &gs)), "Openened File");
+			fname = open_dialog.get_filename();
+			if ((loc = fname.rfind('/')) > 0)
+			{
+				fname = fname.substr(loc+1);
+			}
+			i = documents.append_page(*(new ImageArea(open_dialog.get_filename(), &gs)), fname);
 			documents.set_current_page(i);
 			documents.show_all();
 		}

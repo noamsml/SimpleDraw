@@ -25,6 +25,7 @@ ImageArea::ImageArea(Glib::ustring pngname, GlobalSettings* gs)
 	drawing = Cairo::ImageSurface::create_from_png(pngname);
 	this->width = drawing->get_width();
 	this->height = drawing->get_height();
+	this->fname = pngname;
 	buffer = Cairo::ImageSurface::create(drawing->get_format(), this->width, this->height);
 	general_init(gs);
 }
