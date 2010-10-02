@@ -5,30 +5,41 @@ ImageArea::ImageArea (int width, int height, GlobalSettings* gs, Glib::ustring n
 {
 	this->width = width;
 	this->height = height;
-	this->gs = gs;
 	this->fname = name;
 
-	add_events(Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON_RELEASE_MASK );
 
 
 	drawing = Cairo::ImageSurface::create(Cairo::FORMAT_RGB24, width, height);
+	buffer = Cairo::ImageSurface::create(Cairo::FORMAT_RGB24, width, height);
 	
-	drawingContext = Cairo::Context::create(drawing);
-	drawingPattern = Cairo::SurfacePattern::create(drawing);
-
+	general_init(gs);
+	
 	//Initial image for your enjoyment
 	drawingContext->set_source_rgb(255,255,255);
 	drawingContext->rectangle(0,0,width, height);
 	drawingContext->fill();
-	drawingContext->set_source_rgb(0,0,0);
+}
 
-	drawingPattern->set_filter(Cairo::FILTER_FAST);
+ImageArea::ImageArea(Glib::ustring pngname, GlobalSettings* gs)
+{
+	drawing = Cairo::ImageSurface::create_from_png(pngname);
+	this->width = drawing->get_width();
+	this->height = drawing->get_height();
+	buffer = Cairo::ImageSurface::create(drawing->get_format(), this->width, this->height);
+	general_init(gs);
+}
 
-	buffer = Cairo::ImageSurface::create(Cairo::FORMAT_RGB24, width, height);
+void ImageArea::general_init(GlobalSettings* gs)
+{
+	add_events(Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON_RELEASE_MASK );
+	this->gs = gs;
+	
 	bufferContext = Cairo::Context::create(buffer);
 	bufferPattern = Cairo::SurfacePattern::create(buffer);
-	bufferPattern->set_filter(Cairo::FILTER_FAST);
-	scale_last_rendered = -1;
+	bufferPattern->set_filter(Cairo::FILTER_GOOD);
+	drawingContext = Cairo::Context::create(drawing);
+	drawingPattern = Cairo::SurfacePattern::create(drawing);
+	drawingPattern->set_filter(Cairo::FILTER_GOOD);
 }
 
 bool ImageArea::on_button_press_event(GdkEventButton* buttons)
@@ -106,6 +117,7 @@ void ImageArea::update_from_buffer()
 {
 	update_stuff(get_dwindow()->create_cairo_context(), bufferPattern, 0,0,width,height,true);
 }
+
 
 void ImageArea::update_from_buffer(double x, double y, double w, double h)
 {

@@ -26,6 +26,8 @@ void MainWindow::populate_menus()
 	MenuActions->add(Action::create("MenuFile", "_File"));
 	MenuActions->add(Action::create("New", Stock::NEW),
 		sigc::mem_fun(*this, &MainWindow::new_image_dialog));
+	MenuActions->add(Action::create("Open", Stock::OPEN),
+		sigc::mem_fun(*this, &MainWindow::open_image_dialog));
 	
 	MenuUI = UIManager::create();
 	MenuUI->insert_action_group(MenuActions);
@@ -34,6 +36,7 @@ void MainWindow::populate_menus()
     "  <menubar name='MenuBar'>"
     "    <menu action='MenuFile'>"
     "      <menuitem action='New'/>"
+    "	   <menuitem action='Open'/>"
     "    </menu></menubar>"
     "</ui>");
     menubar = MenuUI->get_widget("/MenuBar");
@@ -87,7 +90,7 @@ void MainWindow::populate_window()
 
 MainWindow::MainWindow() : 	mainbox(false,10), toolbox("Tools"),
 							settingbox("Tool settings"), scale_label("Scale", ALIGN_LEFT, ALIGN_BOTTOM),
-							scale_range(0.5, 4, 0.5)
+							scale_range(0.5, 4, 0.5), open_dialog("Open a PNG Image")
 {	
 	populate_tools();
 	populate_menus();
@@ -207,6 +210,16 @@ void NewDocumentBox::rebounce_signal()
 		std::cout << "Newdoc FAIL" << std::endl;
 	}
 }
+
+void MainWindow::open_image_dialog()
+{
+	int i;
+	open_dialog.run();
+	i = documents.append_page(*(new ImageArea(open_dialog.get_filename(), &gs)), "Openened File");
+	documents.set_current_page(i);
+	documents.show_all();
+}
+	
 
 int main(int argc, char** argv)
 {

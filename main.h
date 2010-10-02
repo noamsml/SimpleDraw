@@ -47,6 +47,8 @@ class MainWindow : public Window
 	Label scale_label;
 	HBox scale_hbox;
 	ColorButton choose_color;
+	FileChooserDialog open_dialog;
+	
 	
 	ToolColumn toolcol;
 	Glib::RefPtr<ListStore> toolstore;
@@ -68,6 +70,7 @@ class MainWindow : public Window
 	MainWindow();
 	void new_image_tab(int w, int h);
 	void new_image_dialog();
+	void open_image_dialog();
 	void quit();
 	ImageArea* get_current_tab();
 	

@@ -27,6 +27,9 @@ class GlobalSettings
 
 class ImageArea : public Layout
 {
+	protected:
+	void general_init(GlobalSettings* gs);
+	
 	public:
 	Cairo::RefPtr<Cairo::ImageSurface> drawing;
 	Cairo::RefPtr<Cairo::SurfacePattern> drawingPattern;
@@ -44,9 +47,9 @@ class ImageArea : public Layout
 	
 	int width;
 	int height;
-	int scale_last_rendered;
 	
 	ImageArea(int width, int height, GlobalSettings* settings, Glib::ustring name="");
+	ImageArea(Glib::ustring pngpath, GlobalSettings* settings);
 
 	bool on_button_press_event(GdkEventButton* buttons);
 	bool on_button_release_event(GdkEventButton* buttons);
