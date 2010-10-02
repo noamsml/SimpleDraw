@@ -73,7 +73,7 @@ bool ImageArea::on_motion_notify_event(GdkEventMotion* buttons)
 bool ImageArea::on_expose_event(GdkEventExpose* expose)
 {
 	clear_window();
-	update_drawing(expose->area.x, expose->area.y, expose->area.width, expose->area.height);
+	update_drawing(); //FIXME: Cannot do partial updates for now
 }
 
 void ImageArea::clear_window()

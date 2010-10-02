@@ -5,6 +5,12 @@
 #include "image.h"
 #include "tools.h"
 
+class PngFileChooser : public FileChooserDialog
+{
+	public:
+	PngFileChooser();
+};
+
 class ToolColumn : public TreeModelColumnRecord {
 	public:
 		ToolColumn();
@@ -47,7 +53,7 @@ class MainWindow : public Window
 	Label scale_label;
 	HBox scale_hbox;
 	ColorButton choose_color;
-	FileChooserDialog open_dialog;
+	PngFileChooser open_dialog;
 	
 	
 	ToolColumn toolcol;

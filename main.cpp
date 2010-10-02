@@ -90,7 +90,7 @@ void MainWindow::populate_window()
 
 MainWindow::MainWindow() : 	mainbox(false,10), toolbox("Tools"),
 							settingbox("Tool settings"), scale_label("Scale", ALIGN_LEFT, ALIGN_BOTTOM),
-							scale_range(0.5, 4, 0.5), open_dialog("Open a PNG Image")
+							scale_range(0.5, 4, 0.5)
 {	
 	populate_tools();
 	populate_menus();
@@ -214,11 +214,40 @@ void NewDocumentBox::rebounce_signal()
 void MainWindow::open_image_dialog()
 {
 	int i;
-	open_dialog.run();
-	i = documents.append_page(*(new ImageArea(open_dialog.get_filename(), &gs)), "Openened File");
-	documents.set_current_page(i);
-	documents.show_all();
+	MessageDialog errmsg("Open failed", false, MESSAGE_ERROR);
+	if (open_dialog.run())
+	{
+		try
+		{
+			i = documents.append_page(*(new ImageArea(open_dialog.get_filename(), &gs)), "Openened File");
+			documents.set_current_page(i);
+			documents.show_all();
+		}
+		catch (std::bad_alloc& e)
+		{
+			open_dialog.hide();
+			errmsg.run();
+		}
+	}
+	open_dialog.hide();
 }
+	
+PngFileChooser::PngFileChooser() : FileChooserDialog("Choose a PNG File")
+{
+	FileFilter pngfilter;
+	FileFilter anyfilter;
+	add_button(Stock::OPEN, 1);
+	add_button(Stock::CANCEL, 0);
+	
+	pngfilter.set_name("PNG Image");
+	pngfilter.add_pattern("*.png");
+	add_filter(pngfilter);
+	anyfilter.set_name("Anything");
+	anyfilter.add_pattern("*.*");
+	add_filter(anyfilter);
+}
+	
+	
 	
 
 int main(int argc, char** argv)
