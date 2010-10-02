@@ -9,7 +9,7 @@
 #include "gtklibs.h"
 #include "image.h"
 
-class LineSettingsPane : public VBox
+class LineSettingsPane : virtual public VBox
 {
 	public:
 	Label widthLabel;

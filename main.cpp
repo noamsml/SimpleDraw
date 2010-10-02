@@ -37,7 +37,7 @@ void MainWindow::populate_menus()
     "    </menu></menubar>"
     "</ui>");
     menubar = MenuUI->get_widget("/MenuBar");
-	
+	add_accel_group(MenuUI->get_accel_group());
 }
 
 void MainWindow::populate_window()
@@ -45,8 +45,6 @@ void MainWindow::populate_window()
 	set_size_request(800, 600);
 	set_title("SimpleDraw");
 	add(winbox);
-	
-	
 	
 	toolbox.add(toolview);
 	toolview.set_size_request(-1, 200);
@@ -77,6 +75,11 @@ void MainWindow::populate_window()
 	newdoc.new_doc_made.connect(sigc::mem_fun(*this, &MainWindow::new_image_tab));
 	scale_range.set_value(1);
 	scale_range.set_size_request(200, -1);
+	
+	menubar->show_all();
+	mainbox.show_all();
+	winbox.show();
+	show();
 	
 }
 
@@ -173,6 +176,7 @@ ImageArea* MainWindow::get_current_tab()
 void MainWindow::new_image_dialog()
 {
 	std::cout << "new image dialog!" << std::endl;
+	newdoc.show();
 }
 
 NewDocumentBox::NewDocumentBox() :
@@ -185,12 +189,15 @@ NewDocumentBox::NewDocumentBox() :
 	pack_end(newbtn, false, false);
 	
 	newbtn.signal_clicked().connect(mem_fun(*this, &NewDocumentBox::rebounce_signal));
+	set_border_width(2);
+	show_all_children();
 }
 
 void NewDocumentBox::rebounce_signal()
 {
 	int w,h;
 	std::cout << "Rebouncing" << std::endl;
+	hide();
 	if (sscanf(wentry.get_text().c_str(), "%d", &w) && sscanf(hentry.get_text().c_str(), "%d", &h))
 	{
 		new_doc_made.emit(w,h);
@@ -205,7 +212,6 @@ int main(int argc, char** argv)
 {
 	Main app(argc, argv);
 	MainWindow mw;
-	mw.show_all();
 	app.run(mw);
 	return 0;
 }
