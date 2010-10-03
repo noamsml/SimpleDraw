@@ -79,6 +79,8 @@ class MainWindow : public Window
 	void open_image_dialog();
 	void save_image();
 	void save_image_dialog();
+	void open_image_from_string(Glib::ustring str);
+	
 	void quit();
 	
 	ImageArea* get_current_tab();

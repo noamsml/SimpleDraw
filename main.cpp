@@ -205,6 +205,8 @@ void MainWindow::new_image_dialog()
 	newdoc.show();
 }
 
+
+
 NewDocumentBox::NewDocumentBox() :
 	wlabel("Width: "), hlabel("Height: "),newbtn("New Document")
 {
@@ -236,32 +238,38 @@ void NewDocumentBox::rebounce_signal()
 
 void MainWindow::open_image_dialog()
 {
-	int i, loc;
-	MessageDialog errmsg("Open failed", false, MESSAGE_ERROR);
-	Glib::ustring fname;
 	if (open_dialog.run())
 	{
-		try
-		{
-			fname = open_dialog.get_filename();
-			if ((loc = fname.rfind('/')) > 0)
-			{
-				fname = fname.substr(loc+1);
-			}
-			add_new_tab(new ImageArea(open_dialog.get_filename(), &gs), fname);
-		}
-		catch (std::bad_alloc& e)
-		{
-			open_dialog.hide();
-			errmsg.run();
-		}
+		open_image_from_string(open_dialog.get_filename());
 	}
 	open_dialog.hide();
+}
+
+void MainWindow::open_image_from_string(Glib::ustring str)
+{
+	int loc;
+	Glib::ustring fname = str;
+	MessageDialog errmsg("Open failed", false, MESSAGE_ERROR);
+
+	if ((loc = fname.rfind('/')) > 0)
+	{
+		fname = fname.substr(loc+1);
+	}
+	
+	try
+	{
+		add_new_tab(new ImageArea(str, &gs), fname);
+	}
+	catch (std::exception& e)
+	{
+		errmsg.run();
+	}
 }
 
 void MainWindow::save_image()
 {
 	ImageArea* image_to_save = get_current_tab();
+	
 	MessageDialog errmsg("Save failed", false, MESSAGE_ERROR);
 	if (image_to_save->fname == "") save_image_dialog();
 	else {
@@ -328,6 +336,10 @@ int main(int argc, char** argv)
 {
 	Main app(argc, argv);
 	MainWindow mw;
+	for (int i = 1; i < argc; i++)
+	{
+		mw.open_image_from_string(argv[i]);
+	}
 	app.run(mw);
 	return 0;
 }
