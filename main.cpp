@@ -153,14 +153,8 @@ TreeModel::Row MainWindow::add_tool(Glib::ustring name, Tool* tool)
 
 void MainWindow::new_image_tab(int w, int h)
 {
-	int i;
-	std::cout << w << " :: " << h << std::endl;
 	ImageArea* wid = new ImageArea(w,h, &gs, "");
-	//TOFIX: no reference-counting on this pointer (?)
-	std::cout << "Newdoc" << std::endl;
-	std::cout << (i = documents.append_page(*wid, "New Document")) << std::endl;
-	documents.show_all();
-	documents.set_current_page(i);
+	add_new_tab(wid, "Unsaved Document");
 }
 
 void MainWindow::quit()
@@ -178,7 +172,31 @@ ImageArea* MainWindow::get_current_tab()
 {
 	int page = documents.get_current_page();
 	if (page < 0) return NULL;
-	return (ImageArea*)documents.get_nth_page(page);
+	return (ImageArea*)(((ScrolledWindow*)documents.get_nth_page(page))->get_child());
+}
+
+void MainWindow::set_current_tabstr(Glib::ustring msg)
+{
+	int page = documents.get_current_page();
+	Widget* w = documents.get_nth_page(page);
+	if (page < 0) return;
+	return ((Label*)documents.get_tab_label(*w))->set_text(msg);
+}
+
+int MainWindow::add_new_tab(ImageArea* ia, Glib::ustring tabname)
+{
+	int i;
+	ScrolledWindow* sw = new ScrolledWindow();
+	sw->add(*ia);
+	i = documents.append_page(*sw, tabname);
+	if (i < 0) 
+	{
+		delete sw;
+		return 0;
+	}
+	documents.set_current_page(i);
+	documents.show_all();
+	return 1;
 }
 
 void MainWindow::new_image_dialog()
@@ -230,9 +248,7 @@ void MainWindow::open_image_dialog()
 			{
 				fname = fname.substr(loc+1);
 			}
-			i = documents.append_page(*(new ImageArea(open_dialog.get_filename(), &gs)), fname);
-			documents.set_current_page(i);
-			documents.show_all();
+			add_new_tab(new ImageArea(open_dialog.get_filename(), &gs), fname);
 		}
 		catch (std::bad_alloc& e)
 		{
@@ -261,7 +277,7 @@ void MainWindow::save_image()
 
 void MainWindow::save_image_dialog()
 {
-	int i, loc;
+	int loc;
 	ImageArea* image_to_save;
 	MessageDialog errmsg("Save failed", false, MESSAGE_ERROR);
 	Glib::ustring fname;
@@ -275,11 +291,10 @@ void MainWindow::save_image_dialog()
 				fname = fname.substr(loc+1);
 			}
 			
-			i = documents.get_current_page();
-			if (i == -1) throw new std::exception();
-			image_to_save = (ImageArea*)documents.get_nth_page(i);
+			image_to_save = get_current_tab();
+			if (!image_to_save) throw new std::exception();
 			image_to_save->save_to_png(save_dialog.get_filename());
-			((Label*)documents.get_tab_label(*image_to_save))->set_text(fname);
+			set_current_tabstr(fname);
 		}
 		catch (std::exception& e)
 		{

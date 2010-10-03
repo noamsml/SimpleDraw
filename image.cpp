@@ -97,11 +97,13 @@ void ImageArea::update_stuff(Cairo::RefPtr<Cairo::Context> to, Cairo::RefPtr<Cai
 void ImageArea::update_drawing()
 {
 	update_stuff(get_dwindow()->create_cairo_context(), drawingPattern, 0,0,width,height,true);
+	set_size(width*gs->scale, height*gs->scale);
 }
 
 void ImageArea::update_drawing(double x, double y, double w, double h)
 {
 	update_stuff(get_dwindow()->create_cairo_context(), drawingPattern, x,y,w,h,true);
+	set_size(width*gs->scale, height*gs->scale);
 }
 
 void ImageArea::update_buffer()

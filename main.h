@@ -80,7 +80,10 @@ class MainWindow : public Window
 	void save_image();
 	void save_image_dialog();
 	void quit();
+	
 	ImageArea* get_current_tab();
+	void set_current_tabstr(Glib::ustring str);
+	int add_new_tab(ImageArea* ia, Glib::ustring tabname);
 	
 	
 
