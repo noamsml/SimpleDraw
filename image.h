@@ -72,6 +72,8 @@ class ImageArea : public Layout
 
 	double untrans_x(double x);
 	double untrans_y(double y);
+	
+	void save_to_png(Glib::ustring fname);
 
 	void resize_img(double sc);
 	Glib::RefPtr<Gdk::Window> get_dwindow();

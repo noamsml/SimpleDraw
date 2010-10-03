@@ -28,6 +28,10 @@ void MainWindow::populate_menus()
 		sigc::mem_fun(*this, &MainWindow::new_image_dialog));
 	MenuActions->add(Action::create("Open", Stock::OPEN),
 		sigc::mem_fun(*this, &MainWindow::open_image_dialog));
+	MenuActions->add(Action::create("Save", Stock::SAVE),
+		sigc::mem_fun(*this, &MainWindow::save_image));
+	MenuActions->add(Action::create("SaveAs", Stock::SAVE_AS),
+		sigc::mem_fun(*this, &MainWindow::save_image_dialog));
 	
 	MenuUI = UIManager::create();
 	MenuUI->insert_action_group(MenuActions);
@@ -37,6 +41,8 @@ void MainWindow::populate_menus()
     "    <menu action='MenuFile'>"
     "      <menuitem action='New'/>"
     "	   <menuitem action='Open'/>"
+    "	   <menuitem action='Save'/>"
+    "	   <menuitem action='SaveAs'/>"
     "    </menu></menubar>"
     "</ui>");
     menubar = MenuUI->get_widget("/MenuBar");
@@ -90,12 +96,11 @@ void MainWindow::populate_window()
 
 MainWindow::MainWindow() : 	mainbox(false,10), toolbox("Tools"),
 							settingbox("Tool settings"), scale_label("Scale", ALIGN_LEFT, ALIGN_BOTTOM),
-							scale_range(0.5, 4, 0.5)
+							scale_range(0.5, 4, 0.5), save_dialog(1)
 {	
 	populate_tools();
 	populate_menus();
 	populate_window();
-	
 }
 
 
@@ -237,13 +242,61 @@ void MainWindow::open_image_dialog()
 	}
 	open_dialog.hide();
 }
+
+void MainWindow::save_image()
+{
+	ImageArea* image_to_save = get_current_tab();
+	MessageDialog errmsg("Save failed", false, MESSAGE_ERROR);
+	if (image_to_save->fname == "") save_image_dialog();
+	else {
+		try {
+			image_to_save->save_to_png(image_to_save->fname);
+		}
+		catch (std::exception& e)
+		{
+			errmsg.run();
+		}
+	}
+}
+
+void MainWindow::save_image_dialog()
+{
+	int i, loc;
+	ImageArea* image_to_save;
+	MessageDialog errmsg("Save failed", false, MESSAGE_ERROR);
+	Glib::ustring fname;
+	if (save_dialog.run())
+	{
+		try
+		{
+			fname = save_dialog.get_filename();
+			if ((loc = fname.rfind('/')) > 0)
+			{
+				fname = fname.substr(loc+1);
+			}
+			
+			i = documents.get_current_page();
+			if (i == -1) throw new std::exception();
+			image_to_save = (ImageArea*)documents.get_nth_page(i);
+			image_to_save->save_to_png(save_dialog.get_filename());
+			((Label*)documents.get_tab_label(*image_to_save))->set_text(fname);
+		}
+		catch (std::exception& e)
+		{
+			save_dialog.hide();
+			errmsg.run();
+		}
+	}
+	save_dialog.hide();
+}
 	
-PngFileChooser::PngFileChooser() : FileChooserDialog("Choose a PNG File")
+PngFileChooser::PngFileChooser(int save) : 
+	FileChooserDialog((save) ? "Save" : "Open", (save) ? FILE_CHOOSER_ACTION_SAVE : FILE_CHOOSER_ACTION_OPEN)
 {
 	FileFilter pngfilter;
 	FileFilter anyfilter;
-	add_button(Stock::OPEN, 1);
 	add_button(Stock::CANCEL, 0);
+	add_button((save) ? Stock::SAVE : Stock::OPEN, 1);
 	
 	pngfilter.set_name("PNG Image");
 	pngfilter.add_pattern("*.png");

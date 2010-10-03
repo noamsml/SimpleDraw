@@ -140,4 +140,10 @@ Glib::RefPtr<Gdk::Window> ImageArea::get_dwindow()
 	return get_bin_window();
 }
 
+void ImageArea::save_to_png(Glib::ustring fname)
+{
+	drawing->write_to_png(fname);
+	this->fname = fname;
+}
+
 Tool::~Tool() {}
