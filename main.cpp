@@ -32,7 +32,9 @@ void MainWindow::populate_menus()
 		sigc::mem_fun(*this, &MainWindow::save_image));
 	MenuActions->add(Action::create("SaveAs", Stock::SAVE_AS),
 		sigc::mem_fun(*this, &MainWindow::save_image_dialog));
-	
+	MenuActions->add(Action::create("Close", Stock::CLOSE),
+		sigc::mem_fun(*this, &MainWindow::close_document));
+		
 	MenuUI = UIManager::create();
 	MenuUI->insert_action_group(MenuActions);
 	MenuUI->add_ui_from_string(
@@ -43,6 +45,7 @@ void MainWindow::populate_menus()
     "	   <menuitem action='Open'/>"
     "	   <menuitem action='Save'/>"
     "	   <menuitem action='SaveAs'/>"
+    "	   <menuitem action='Close'/>"
     "    </menu></menubar>"
     "</ui>");
     menubar = MenuUI->get_widget("/MenuBar");
@@ -194,10 +197,26 @@ int MainWindow::add_new_tab(ImageArea* ia, Glib::ustring tabname)
 		delete sw;
 		return 0;
 	}
-	documents.set_current_page(i);
+	
 	documents.show_all();
+	documents.set_current_page(i);
 	return 1;
 }
+
+void MainWindow::close_document()
+{
+	int i = documents.get_current_page();
+	if (i >= 0)
+	{
+		ScrolledWindow *sa = (ScrolledWindow*)documents.get_nth_page(i);
+		ImageArea *ia = (ImageArea*)sa->get_child();
+		documents.remove(*sa);
+		sa->remove();
+		delete ia;
+		delete sa;
+	}
+}
+	
 
 void MainWindow::new_image_dialog()
 {

@@ -80,6 +80,7 @@ class MainWindow : public Window
 	void save_image();
 	void save_image_dialog();
 	void open_image_from_string(Glib::ustring str);
+	void close_document();
 	
 	void quit();
 	
