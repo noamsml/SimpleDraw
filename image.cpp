@@ -1,6 +1,12 @@
 #include "image.h"
 #include <stdio.h>
 
+inline int umod(int a, int b)
+{
+	if (a < 0) return b + (a % b);
+	return a % b;
+}
+
 ImageArea::ImageArea (int width, int height, GlobalSettings* gs, Glib::ustring name)
 {
 	this->width = width;
@@ -76,10 +82,10 @@ void ImageArea::undo()
 {
 	if (undo_current != undo_start)
 	{
-		undo_current = (undo_current-1)%UNDOLEN;
+		undo_current = umod(undo_current-1, UNDOLEN);
 		printf("%d %d %d\n", undo_start, undo_current, undo_end);
 		//TODO:resize fix
-		Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(undo_history[(undo_current-1)%UNDOLEN]);
+		Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(undo_history[umod(undo_current-1,UNDOLEN)]);
 		drawingContext->set_source(cptrn);
 		drawingContext->paint();
 		update_drawing();
@@ -93,7 +99,7 @@ void ImageArea::redo()
 		undo_current = (undo_current+1)%UNDOLEN;
 		printf("%d %d %d\n", undo_start, undo_current, undo_end);
 		//TODO:resize fix
-		Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(undo_history[(undo_current-1)%UNDOLEN]);
+		Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(undo_history[umod(undo_current-1,UNDOLEN)]);
 		drawingContext->set_source(cptrn);
 		drawingContext->paint();
 		update_drawing();
