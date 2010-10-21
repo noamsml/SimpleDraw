@@ -17,8 +17,11 @@ void FreeHand::mouse_up(ImageArea* ia, double x, double y)
 	ia->drawingContext->restore();
 
 	//sorry
+	//why?
 	ia->update_buffer();
 	ia->update_from_buffer();
+	
+	ia->savepoint();
 }
 
 FreeHand::FreeHand()
@@ -96,6 +99,8 @@ void DrawLine::mouse_up(ImageArea* ia, double x, double y)
 	ia->update_drawing();
 	lastx = x;
 	lasty = y;
+	
+	ia->savepoint();
 }
 
 LineSettingsPane::LineSettingsPane() : widthLabel("Width: "), widthEntry(1, 20, 2)

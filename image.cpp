@@ -16,8 +16,8 @@ ImageArea::ImageArea (int width, int height, GlobalSettings* gs, Glib::ustring n
 	
 	//Initial image for your enjoyment
 	drawingContext->set_source_rgb(255,255,255);
-	drawingContext->rectangle(0,0,width, height);
-	drawingContext->fill();
+	drawingContext->paint();
+	savepoint();
 }
 
 ImageArea::ImageArea(Glib::ustring pngname, GlobalSettings* gs)
@@ -28,6 +28,7 @@ ImageArea::ImageArea(Glib::ustring pngname, GlobalSettings* gs)
 	this->fname = pngname;
 	buffer = Cairo::ImageSurface::create(drawing->get_format(), this->width, this->height);
 	general_init(gs);
+	savepoint();
 }
 
 void ImageArea::general_init(GlobalSettings* gs)
@@ -41,6 +42,8 @@ void ImageArea::general_init(GlobalSettings* gs)
 	drawingContext = Cairo::Context::create(drawing);
 	drawingPattern = Cairo::SurfacePattern::create(drawing);
 	drawingPattern->set_filter(Cairo::FILTER_GOOD);
+	
+	undo_start = undo_current = undo_end = 0;
 }
 
 bool ImageArea::on_button_press_event(GdkEventButton* buttons)
@@ -61,6 +64,52 @@ bool ImageArea::on_button_release_event(GdkEventButton* buttons)
 		}
 }
 
+void ImageArea::savepoint()
+{
+	undo_history[undo_current] = imgclone(drawing);
+	undo_end = undo_current = (undo_current+1) % UNDOLEN;
+	if (undo_end == undo_start) undo_start = (undo_start+1) % UNDOLEN;
+	printf("%d %d %d\n", undo_start, undo_current, undo_end);
+}
+
+void ImageArea::undo()
+{
+	if (undo_current != undo_start)
+	{
+		undo_current = (undo_current-1)%UNDOLEN;
+		printf("%d %d %d\n", undo_start, undo_current, undo_end);
+		//TODO:resize fix
+		Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(undo_history[(undo_current-1)%UNDOLEN]);
+		drawingContext->set_source(cptrn);
+		drawingContext->paint();
+		update_drawing();
+	}
+}
+
+void ImageArea::redo()
+{
+	if (undo_current != undo_end)
+	{
+		undo_current = (undo_current+1)%UNDOLEN;
+		printf("%d %d %d\n", undo_start, undo_current, undo_end);
+		//TODO:resize fix
+		Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(undo_history[(undo_current-1)%UNDOLEN]);
+		drawingContext->set_source(cptrn);
+		drawingContext->paint();
+		update_drawing();
+	}
+}
+
+Cairo::RefPtr<Cairo::ImageSurface> ImageArea::imgclone(Cairo::RefPtr<Cairo::ImageSurface> original)
+{
+	Cairo::RefPtr<Cairo::ImageSurface> clone = Cairo::ImageSurface::create(original->get_format(), 
+							original->get_width(), original->get_height());
+	Cairo::RefPtr<Cairo::Context> ccontext = Cairo::Context::create(clone);
+	Cairo::RefPtr<Cairo::Pattern> cptrn = Cairo::SurfacePattern::create(original);
+	ccontext->set_source(cptrn);
+	ccontext->paint();
+	return clone;
+}
 
 bool ImageArea::on_motion_notify_event(GdkEventMotion* buttons)
 {

@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include "gtklibs.h"
+#define UNDOLEN 5
 
 class ImageArea;
 class Tool;
@@ -31,10 +32,17 @@ class ImageArea : public Layout
 	void general_init(GlobalSettings* gs);
 	
 	public:
+	Cairo::RefPtr<Cairo::ImageSurface> undo_history[5];
+	int undo_start, undo_end, undo_current;
+	
+	void savepoint();
+	Cairo::RefPtr<Cairo::ImageSurface> imgclone(Cairo::RefPtr<Cairo::ImageSurface> original);
+	
 	Cairo::RefPtr<Cairo::ImageSurface> drawing;
 	Cairo::RefPtr<Cairo::SurfacePattern> drawingPattern;
 	Cairo::RefPtr<Cairo::Context> drawingContext;
-
+	
+	
 	//Display buffer
 	//used for tools that need to display stuff on the screen that will
 	//not be part of the drawing itself
@@ -63,6 +71,8 @@ class ImageArea : public Layout
 	void update_buffer(double x, double y, double w, double h);
 	void update_from_buffer();
 	void update_from_buffer(double x, double y, double w, double h);
+	void undo();
+	void redo();
 
 	void clear_window();
 	void set_color(Gdk::Color);

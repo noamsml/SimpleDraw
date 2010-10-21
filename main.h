@@ -82,6 +82,9 @@ class MainWindow : public Window
 	void open_image_from_string(Glib::ustring str);
 	void close_document();
 	
+	void undo_current();
+	void redo_current();
+	
 	void quit();
 	
 	ImageArea* get_current_tab();

@@ -34,6 +34,12 @@ void MainWindow::populate_menus()
 		sigc::mem_fun(*this, &MainWindow::save_image_dialog));
 	MenuActions->add(Action::create("Close", Stock::CLOSE),
 		sigc::mem_fun(*this, &MainWindow::close_document));
+	MenuActions->add(Action::create("MenuEdit", "_Edit"));
+	MenuActions->add(Action::create("Undo", Stock::UNDO),
+		sigc::mem_fun(*this, &MainWindow::undo_current));
+	MenuActions->add(Action::create("Redo", Stock::REDO),
+		sigc::mem_fun(*this, &MainWindow::redo_current));
+	
 		
 	MenuUI = UIManager::create();
 	MenuUI->insert_action_group(MenuActions);
@@ -46,7 +52,9 @@ void MainWindow::populate_menus()
     "	   <menuitem action='Save'/>"
     "	   <menuitem action='SaveAs'/>"
     "	   <menuitem action='Close'/>"
-    "    </menu></menubar>"
+    "    </menu><menu action='MenuEdit'>					"
+    "<menuitem action='Undo' /><menuitem action='Redo' /></menu>"
+    "</menubar>"
     "</ui>");
     menubar = MenuUI->get_widget("/MenuBar");
 	add_accel_group(MenuUI->get_accel_group());
@@ -262,6 +270,16 @@ void MainWindow::open_image_dialog()
 		open_image_from_string(open_dialog.get_filename());
 	}
 	open_dialog.hide();
+}
+
+void MainWindow::undo_current()
+{
+	get_current_tab()->undo();
+}
+
+void MainWindow::redo_current()
+{
+	get_current_tab()->redo();
 }
 
 void MainWindow::open_image_from_string(Glib::ustring str)
