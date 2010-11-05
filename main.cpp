@@ -17,6 +17,7 @@ void MainWindow::populate_tools()
 	Glib::RefPtr<TreeSelection> sel = toolview.get_selection();
 	sel->select(add_tool("Free Hand", starttool));
 	add_tool("Draw Line", new DrawLine());
+	add_tool("Rectangle", new DrawRect());
 	sel->signal_changed().connect(sigc::mem_fun(*this, &MainWindow::tool_changed));
 }
 	

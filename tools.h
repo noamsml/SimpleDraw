@@ -15,9 +15,21 @@ class LineSettingsPane : virtual public VBox
 	Label widthLabel;
 	HScale widthEntry;
 	
-	sigc::signal<void, LineSettingsPane*> width_changed;
 	float get_line_width();
 	LineSettingsPane();
+};
+
+class FilledSettingsPane : virtual public VBox
+{
+	public:
+	CheckButton filledEntry;
+	
+	int get_filled();
+	FilledSettingsPane();
+};
+
+class RectSettingsPane : virtual public LineSettingsPane, virtual public FilledSettingsPane
+{
 };
 
 class FreeHand : public Tool
@@ -44,10 +56,23 @@ class DrawLine : public Tool
 	double lastx;
 	double lasty;
 	double width;
-	Cairo::RefPtr<Cairo::ImageSurface> buffer;
-	Cairo::RefPtr<Cairo::SurfacePattern> ptn;
 
 	DrawLine();
+	void mouse_down(ImageArea* ia, double x, double y);
+	void mouse_up(ImageArea* ia, double x, double y);
+	void mouse_drag(ImageArea* ia, double x, double y);
+	Widget* get_settings_pane();
+};
+
+
+class DrawRect : public Tool
+{
+	public:
+	RectSettingsPane lsp;
+	double firstx;
+	double firsty;
+
+	DrawRect();
 	void mouse_down(ImageArea* ia, double x, double y);
 	void mouse_up(ImageArea* ia, double x, double y);
 	void mouse_drag(ImageArea* ia, double x, double y);

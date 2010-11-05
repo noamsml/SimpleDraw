@@ -107,10 +107,6 @@ LineSettingsPane::LineSettingsPane() : widthLabel("Width: "), widthEntry(1, 20, 
 {
 	pack_start(widthLabel, false, false);
 	pack_start(widthEntry, false, false);
-	widthEntry.signal_value_changed().connect(
-		sigc::bind( sigc::mem_fun(width_changed, &sigc::signal<void, LineSettingsPane*>::emit), this )
-	);
-	
 }
 
 float LineSettingsPane::get_line_width()
@@ -118,12 +114,83 @@ float LineSettingsPane::get_line_width()
 	return widthEntry.get_value();
 }
 
+
+
+FilledSettingsPane::FilledSettingsPane() : filledEntry("Filled")
+{
+	
+	pack_start(filledEntry, false, false);
+}
+
+int FilledSettingsPane::get_filled()
+{
+	return filledEntry.get_active();
+}
+
+void DrawRect::mouse_down(ImageArea* ia, double x, double y)
+{
+	firstx = x;
+	firsty = y;
+}
+
+void DrawRect::mouse_drag(ImageArea* ia, double x, double y)
+{
+
+	ia->update_buffer();
+
+	Cairo::RefPtr<Cairo::Context> wcontext = ia->bufferContext;
+	wcontext->save();
+	wcontext->set_source(ia->drawingContext->get_source());
+	wcontext->set_line_cap(Cairo::LINE_CAP_ROUND);
+	wcontext->rectangle(firstx,firsty, (x-firstx), (y-firsty));
+	wcontext->set_line_width(lsp.get_line_width());
+	if (!lsp.get_filled())
+	{
+		wcontext->stroke();
+	}
+	else
+	{
+		wcontext->fill();
+	}
+	wcontext->restore();
+
+	ia->update_from_buffer();
+}
+
+void DrawRect::mouse_up(ImageArea* ia, double x, double y)
+{
+	ia->drawingContext->save();
+	ia->drawingContext->set_line_cap(Cairo::LINE_CAP_ROUND);
+	ia->drawingContext->rectangle(firstx,firsty, (x-firstx), (y-firsty));
+	ia->drawingContext->set_line_width(lsp.get_line_width());
+	if (!lsp.get_filled())
+	{
+		ia->drawingContext->stroke();
+	}
+	else
+	{
+		ia->drawingContext->fill();
+	}
+	ia->drawingContext->restore();
+
+	ia->update_drawing();
+	
+	ia->savepoint();
+}
+
+DrawRect::DrawRect() {}
+
 Widget* FreeHand::get_settings_pane()
 {
 	return &lsp;
 }
 
 Widget* DrawLine::get_settings_pane()
+{
+	return &lsp;
+}
+
+Widget* DrawRect::get_settings_pane()
 {
 	return &lsp;
 }
