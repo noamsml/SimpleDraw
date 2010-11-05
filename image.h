@@ -29,9 +29,13 @@ class GlobalSettings
 class ImageArea : public Layout
 {
 	protected:
+	
+	sigc::signal<void> change_made_sig;
+	
 	void general_init(GlobalSettings* gs);
 	
 	public:
+	int change_made;
 	Cairo::RefPtr<Cairo::ImageSurface> undo_history[5];
 	int undo_start, undo_end, undo_current;
 	
@@ -84,7 +88,7 @@ class ImageArea : public Layout
 	double untrans_y(double y);
 	
 	void save_to_png(Glib::ustring fname);
-
+	sigc::signal<void>& signal_changes_made();
 	void resize_img(double sc);
 	Glib::RefPtr<Gdk::Window> get_dwindow();
 };

@@ -24,6 +24,7 @@ ImageArea::ImageArea (int width, int height, GlobalSettings* gs, Glib::ustring n
 	drawingContext->set_source_rgb(255,255,255);
 	drawingContext->paint();
 	savepoint();
+	change_made = 0;
 }
 
 ImageArea::ImageArea(Glib::ustring pngname, GlobalSettings* gs)
@@ -35,6 +36,7 @@ ImageArea::ImageArea(Glib::ustring pngname, GlobalSettings* gs)
 	buffer = Cairo::ImageSurface::create(drawing->get_format(), this->width, this->height);
 	general_init(gs);
 	savepoint();
+	change_made = 0;
 }
 
 void ImageArea::general_init(GlobalSettings* gs)
@@ -76,6 +78,14 @@ void ImageArea::savepoint()
 	undo_end = undo_current = (undo_current+1) % UNDOLEN;
 	if (undo_end == undo_start) undo_start = (undo_start+1) % UNDOLEN;
 	printf("%d %d %d\n", undo_start, undo_current, undo_end);
+	
+	if (!change_made) 
+	{
+		change_made = 1;
+		change_made_sig.emit();
+	}
+	else change_made = 1;
+	
 }
 
 void ImageArea::undo()
@@ -182,6 +192,11 @@ void ImageArea::update_from_buffer(double x, double y, double w, double h)
 	update_stuff(get_dwindow()->create_cairo_context(), bufferPattern, x,y,w,h,true);
 }
 
+sigc::signal<void>& ImageArea::signal_changes_made()
+{
+	return change_made_sig;
+}
+
 double ImageArea::trans_x(double x) { return x / gs->scale; }
 double ImageArea::trans_y(double y) { return y / gs->scale; }
 double ImageArea::untrans_x(double x) { return x*gs->scale; }
@@ -201,6 +216,7 @@ void ImageArea::save_to_png(Glib::ustring fname)
 {
 	drawing->write_to_png(fname);
 	this->fname = fname;
+	change_made = 0;
 }
 
 Tool::~Tool() {}

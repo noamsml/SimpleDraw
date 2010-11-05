@@ -214,14 +214,21 @@ int MainWindow::add_new_tab(ImageArea* ia, Glib::ustring tabname)
 void MainWindow::close_document()
 {
 	int i = documents.get_current_page();
+	MessageDialog changed("YOU WILL GO TO THE DEPTHS OF HELL AND LOSE YOUR SOUL IF YOU DO NOT SAVE", true, MESSAGE_WARNING, BUTTONS_YES_NO);
 	if (i >= 0)
 	{
+		
 		ScrolledWindow *sa = (ScrolledWindow*)documents.get_nth_page(i);
 		ImageArea *ia = (ImageArea*)sa->get_child();
-		documents.remove(*sa);
-		sa->remove();
-		delete ia;
-		delete sa;
+		if (!ia->change_made || (changed.run() == -8))
+		{
+			documents.remove(*sa);
+			sa->remove();
+			delete ia;
+			delete sa;
+			ia->change_made = 0;
+		}
+		
 	}
 }
 	
